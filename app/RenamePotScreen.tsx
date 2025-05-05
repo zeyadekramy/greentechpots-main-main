@@ -14,7 +14,7 @@ export default function RenamePotScreen() {
     }
 
     try {
-      const response = await fetch("http://192.168.110.167:3000/update-name", {
+      const response = await fetch("http://13.53.201.187:8080/update-name", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uuid, newName: name }),

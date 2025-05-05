@@ -30,7 +30,7 @@ export default function SelectPlantScreen() {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        const response = await fetch("http://192.168.110.167:3000/plants");
+        const response = await fetch("http://13.53.201.187:8080/plants");
         const data = await response.json();
         setPlants(data);
       } catch (error) {
@@ -43,7 +43,7 @@ export default function SelectPlantScreen() {
 
   const handleChoosePlant = async (plantId: string) => {
     try {
-      await fetch("http://192.168.110.167:3000/assign-plant", {
+      await fetch("http://13.53.201.187:8080/assign-plant", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ uuid: potId, plantId }),

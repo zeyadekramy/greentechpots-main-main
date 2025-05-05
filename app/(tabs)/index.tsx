@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
 import { usePot } from "../PotContext";
 import { useRouter } from "expo-router";
+import { registerForPushNotificationsAsync } from "../../hooks/useRegisterForPushNotifications";
 
 const HomeScreen = () => {
   const [scanning, setScanning] = useState(false);
@@ -21,7 +22,7 @@ const HomeScreen = () => {
     }
 
     try {
-      const res = await fetch(`http://192.168.110.167:3000/device/${data}`);
+      const res = await fetch(`http://13.53.201.187:8080/device/${data}`);
       const json = await res.json();
 
       if (res.ok) {
@@ -82,6 +83,25 @@ const HomeScreen = () => {
       </SafeAreaView>
     );
   }
+   useEffect(() => {
+    (async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        try {
+          await fetch("http://13.53.201.187:8080/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+          });
+          console.log("✅ Token sent to backend");
+        } catch (error) {
+          console.error("❌ Error sending token:", error);
+        }
+      }
+    })();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>

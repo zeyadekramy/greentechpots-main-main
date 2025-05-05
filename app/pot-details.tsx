@@ -85,7 +85,7 @@ export default function PotDetailsScreen() {
           return;
         }
 
-        const response = await fetch(`http://192.168.110.167:3000/device/${parsedPlant.uuid}`);
+        const response = await fetch(`http://13.53.201.187:8080/device/${parsedPlant.uuid}`);
         const data = await response.json();
         const updatedData = { ...data, uuid: parsedPlant.uuid };
 

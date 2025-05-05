@@ -12,7 +12,7 @@ const SearchScreen = () => {
   useEffect(() => {
     const fetchPlants = async () => {
       try {
-        const response = await fetch("http://192.168.110.167:3000/plants");
+        const response = await fetch("http://13.53.201.187:8080/plants");
         const data = await response.json();
         setPlants(data);
         setFilteredPlants(data);
