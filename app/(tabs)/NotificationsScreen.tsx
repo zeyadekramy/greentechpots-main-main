@@ -3,23 +3,12 @@ import { Ionicons } from "@expo/vector-icons";
 
 const notifications = [
   {
-    id: "1",
-    title: "Water Reminder",
-    description: "Your Fiddle Leaf Fig needs watering.",
-    time: "10 h ago",
-  },
-  {
     id: "2",
     title: "Sunlight Alert",
-    description: "Move your Peace Lily to a sunnier spot.",
-    time: "5h ago",
+    description: "Move your (My Smart Pot) to a sunnier spot.",
+    time: "5s ago",
   },
-  {
-    id: "3",
-    title: "Temperature Warning",
-    description: "Monstera is exposed to low temperatures.",
-    time: "1d ago",
-  },
+
 ];
 
 const NotificationsScreen = () => {

@@ -32,12 +32,22 @@ export default function ProfileScreen() {
               <Text style={styles.cardTitle}>My Smart Pots</Text>
             </View>
             <View style={styles.cardContent}>
-              <View style={styles.potsGrid}>
-                <PotCard name="Fiddle Leaf Fig" moisture={75} sunlight={60} temperature={22} />
-                <PotCard name="Snake Plant" moisture={45} sunlight={80} temperature={24} />
-                <PotCard name="Monstera" moisture={65} sunlight={50} temperature={23} />
-                <PotCard name="Peace Lily" moisture={85} sunlight={40} temperature={21} />
-              </View>
+            <View style={styles.potsGrid}>
+  <PotCard 
+    name="Snake Plant" 
+    moisture={45} 
+    sunlight={80} 
+    temperature={24} 
+    image="https://rukminim2.flixcart.com/image/440/584/kura1e80/plant-sapling/7/p/s/yes-perennial-yes-snack-plant-hybrid-1-alogardening-original-imag7t2zhzmscvaj.jpeg?q=60&crop=false" 
+  />
+  <PotCard 
+    name="Peace Lily" 
+    moisture={85} 
+    sunlight={40} 
+    temperature={21} 
+    image="https://assets.eflorist.com/site/00004321/assets/products/PZM_/sku6980438.jpg?1578779286601&impolicy=hero&impolicy=hero" 
+  />
+</View>
             </View>
           </View>
 
@@ -49,11 +59,11 @@ export default function ProfileScreen() {
             <View style={styles.cardContent}>
               <View style={styles.statsGrid}>
                 <View style={styles.statBox}>
-                  <Text style={styles.statNumber}>4</Text>
+                  <Text style={styles.statNumber}>2</Text>
                   <Text style={styles.statLabel}>Active Pots</Text>
                 </View>
                 <View style={styles.statBox}>
-                  <Text style={styles.statNumber}>2</Text>
+                  <Text style={styles.statNumber}>1</Text>
                   <Text style={styles.statLabel}>Need Water</Text>
                 </View>
                 <View style={styles.statBox}>
@@ -85,12 +95,12 @@ export default function ProfileScreen() {
   )
 }
 
-function PotCard({ name, moisture, sunlight, temperature }) {
+function PotCard({ name, moisture, sunlight, temperature, image }) {
   return (
     <View style={styles.potCard}>
       <View style={styles.potCardHeader}>
         <View style={styles.potImageContainer}>
-          <Image source={{ uri: "https://via.placeholder.com/80" }} style={styles.potImage} />
+          <Image source={{ uri: image }} style={styles.potImage} />
         </View>
         <View>
           <Text style={styles.potName}>{name}</Text>

@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, SafeAreaView, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { CameraView, useCameraPermissions } from "expo-camera";
@@ -13,6 +13,68 @@ const HomeScreen = () => {
 
   const { pots = [], addPot = () => {}, clearPots = () => {} } = usePot() || {};
   const router = useRouter();
+  useEffect(() => {
+    (async () => {
+      const token = await registerForPushNotificationsAsync();
+      if (token) {
+        try {
+          await fetch("http://13.53.201.187:8080/token", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ token }),
+          });
+          console.log("✅ Token sent to backend");
+        } catch (error) {
+          console.error("❌ Error sending token:", error);
+        }
+      }
+    })();
+  }, []);
+
+  // Helper function to determine status color
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'healthy':
+        return '#4CAF50'; // Green - your existing primary color
+      case 'needsWater':
+        return '#2196F3'; // Blue
+      case 'overwatered':
+        return '#FFC107'; // Amber/Yellow
+      case 'critical':
+        return '#F44336'; // Red
+      default:
+        return '#9E9E9E'; // Grey for unknown status
+    }
+  };
+
+  // Helper function to get status text
+  const getStatusText = (status) => {
+    switch(status) {
+      case 'healthy':
+        return 'Healthy';
+      case 'needsWater':
+        return 'Needs Water';
+      case 'overwatered':
+        return 'Overwatered';
+      case 'critical':
+        return 'Critical';
+      default:
+        return 'Unknown';
+    }
+  };
+
+  // Function to determine status (in a real app, this would use actual sensor data)
+  const determineStatus = (pot) => {
+    // This is a placeholder. In a real app, you would use actual data from the pot
+    // For example: pot.moistureLevel, pot.temperature, etc.
+    
+    // For demonstration, we'll use the pot's UUID to generate a consistent status
+    const sum = pot.uuid.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const statusOptions = ['healthy', 'needsWater', 'overwatered', 'critical'];
+    return statusOptions[sum % statusOptions.length];
+  };
 
   const handleScan = async (data: string) => {
     if (pots.some((p: { uuid: string }) => p.uuid === data)) {
@@ -83,25 +145,6 @@ const HomeScreen = () => {
       </SafeAreaView>
     );
   }
-   useEffect(() => {
-    (async () => {
-      const token = await registerForPushNotificationsAsync();
-      if (token) {
-        try {
-          await fetch("http://13.53.201.187:8080/token", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ token }),
-          });
-          console.log("✅ Token sent to backend");
-        } catch (error) {
-          console.error("❌ Error sending token:", error);
-        }
-      }
-    })();
-  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -140,25 +183,39 @@ const HomeScreen = () => {
 
         <View style={styles.plantsGrid}>
           {pots.length > 0 ? (
-            pots.map((plant: { uuid: string; assignedPlant?: { photo?: string }; name: string }) => (
-              <TouchableOpacity
-                key={plant.uuid}
-                style={styles.plantCard}
-                onPress={() =>
-                  router.push({
-                    pathname: "/pot-details",
-                    params: {
-                      plant: JSON.stringify(plant),
-                    },
-                  })
-                }>
-                <Image
-                  source={{ uri: plant.assignedPlant?.photo || "https://via.placeholder.com/150" }}
-                  style={styles.plantImage}
-                />
-                <Text style={styles.potName}>{plant.name}</Text>
-              </TouchableOpacity>
-            ))
+            pots.map((plant: { uuid: string; assignedPlant?: { photo?: string }; name: string }) => {
+              // Determine the status for this plant
+              const status = determineStatus(plant);
+              
+              return (
+                <TouchableOpacity
+                  key={plant.uuid}
+                  style={styles.plantCard}
+                  onPress={() =>
+                    router.push({
+                      pathname: "/pot-details",
+                      params: {
+                        plant: JSON.stringify(plant),
+                      },
+                    })
+                  }>
+                  <Image
+                    source={{ uri: plant.assignedPlant?.photo || "https://via.placeholder.com/150" }}
+                    style={styles.plantImage}
+                  />
+                  <Text style={styles.potName}>{plant.name}</Text>
+                  
+                  {/* Status indicator */}
+                  <View style={styles.statusContainer}>
+                    <View style={[
+                      styles.statusIndicator, 
+                      { backgroundColor: getStatusColor(status) }
+                    ]} />
+                    <Text style={styles.statusText}>{getStatusText(status)}</Text>
+                  </View>
+                </TouchableOpacity>
+              );
+            })
           ) : (
             <Text style={styles.noPotsText}>No pots added yet. Start by adding one!</Text>
           )}
@@ -234,6 +291,25 @@ const styles = StyleSheet.create({
   },
   plantImage: { width: "100%", height: 120, resizeMode: "cover" },
   potName: { padding: 10, fontWeight: "500", color: "#333" },
+  // New styles for status indicators
+  statusContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+    paddingBottom: 10,
+    marginTop: -5,
+  },
+  statusIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    marginRight: 6,
+  },
+  statusText: {
+    fontSize: 12,
+    color: "#666",
+    fontWeight: "500",
+  },
   noPotsText: {
     fontSize: 14,
     color: "#999",
