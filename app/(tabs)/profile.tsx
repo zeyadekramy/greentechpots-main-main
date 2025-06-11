@@ -1,7 +1,43 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView } from "react-native"
+import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, SafeAreaView, Modal, Animated } from "react-native"
 import { Feather, Ionicons } from "@expo/vector-icons"
+import { useAuth } from "../AuthContext"
+import { useState, useRef, useEffect } from "react"
+
+type PotCardProps = {
+  name: string;
+  moisture: number;
+  sunlight: number;
+  temperature: number;
+  image: string;
+};
 
 export default function ProfileScreen() {
+  const { user, signOut } = useAuth();
+  const [showMenu, setShowMenu] = useState(false);
+  const slideAnim = useRef(new Animated.Value(300)).current;
+
+  useEffect(() => {
+    if (showMenu) {
+      Animated.spring(slideAnim, {
+        toValue: 0,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    } else {
+      Animated.spring(slideAnim, {
+        toValue: 300,
+        useNativeDriver: true,
+        tension: 50,
+        friction: 7,
+      }).start();
+    }
+  }, [showMenu]);
+
+  const handleCloseMenu = () => {
+    setShowMenu(false);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       {/* Header */}
@@ -10,10 +46,69 @@ export default function ProfileScreen() {
           <Ionicons name="leaf" size={24} color="#4CAF50" />
           <Text style={styles.logoText}>GreenTech Pots</Text>
         </View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => setShowMenu(true)}>
           <Feather name="settings" size={24} color="#333" />
         </TouchableOpacity>
       </View>
+
+      {/* Settings Menu Modal */}
+      <Modal
+        visible={showMenu}
+        transparent
+        animationType="none"
+        onRequestClose={handleCloseMenu}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity style={styles.modalOverlay} onPress={handleCloseMenu} />
+          <Animated.View 
+            style={[
+              styles.menuContainer,
+              { transform: [{ translateX: slideAnim }] }
+            ]}>
+            <View style={styles.menuHeader}>
+              <Text style={styles.menuTitle}>Settings</Text>
+              <TouchableOpacity onPress={handleCloseMenu}>
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.menuContent}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => {
+                handleCloseMenu();
+                // Add profile edit functionality here
+              }}>
+                <Ionicons name="person-outline" size={24} color="#333" />
+                <Text style={styles.menuItemText}>Edit Profile</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => {
+                handleCloseMenu();
+                // Add notifications settings here
+              }}>
+                <Ionicons name="notifications-outline" size={24} color="#333" />
+                <Text style={styles.menuItemText}>Notifications</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.menuItem} onPress={() => {
+                handleCloseMenu();
+                // Add help & support here
+              }}>
+                <Ionicons name="help-circle-outline" size={24} color="#333" />
+                <Text style={styles.menuItemText}>Help & Support</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={[styles.menuItem, styles.logoutItem]} 
+                onPress={() => {
+                  handleCloseMenu();
+                  signOut();
+                }}>
+                <Ionicons name="log-out-outline" size={24} color="#FF5252" />
+                <Text style={[styles.menuItemText, styles.logoutText]}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+        </View>
+      </Modal>
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
@@ -22,7 +117,7 @@ export default function ProfileScreen() {
             <View style={styles.avatarContainer}>
               <Image source={{ uri: "https://via.placeholder.com/100" }} style={styles.avatar} />
             </View>
-            <Text style={styles.userName}>User</Text>
+            <Text style={styles.userName}>{user?.username || 'User'}</Text>
             <Text style={styles.userBio}>Plant enthusiast 🌱</Text>
           </View>
 
@@ -35,14 +130,14 @@ export default function ProfileScreen() {
             <View style={styles.potsGrid}>
   <PotCard 
     name="Snake Plant" 
-    moisture={45} 
+    moisture={40} 
     sunlight={80} 
     temperature={24} 
     image="https://rukminim2.flixcart.com/image/440/584/kura1e80/plant-sapling/7/p/s/yes-perennial-yes-snack-plant-hybrid-1-alogardening-original-imag7t2zhzmscvaj.jpeg?q=60&crop=false" 
   />
   <PotCard 
     name="Peace Lily" 
-    moisture={85} 
+    moisture={50} 
     sunlight={40} 
     temperature={21} 
     image="https://assets.eflorist.com/site/00004321/assets/products/PZM_/sku6980438.jpg?1578779286601&impolicy=hero&impolicy=hero" 
@@ -80,14 +175,6 @@ export default function ProfileScreen() {
 
           {/* Action Buttons */}
           <View style={styles.actionsContainer}>
-            <TouchableOpacity style={styles.actionButton}>
-              <Feather name="settings" size={20} color="white" style={styles.buttonIcon} />
-              <Text style={styles.actionButtonText}>Settings</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.signOutButton}>
-              <Feather name="log-out" size={20} color="white" style={styles.buttonIcon} />
-              <Text style={styles.signOutButtonText}>Sign Out</Text>
-            </TouchableOpacity>
           </View>
         </View>
       </ScrollView>
@@ -95,7 +182,7 @@ export default function ProfileScreen() {
   )
 }
 
-function PotCard({ name, moisture, sunlight, temperature, image }) {
+function PotCard({ name, moisture, sunlight, temperature, image }: PotCardProps) {
   return (
     <View style={styles.potCard}>
       <View style={styles.potCardHeader}>
@@ -364,5 +451,62 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "600",
     fontSize: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  menuContainer: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 300,
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: -2,
+      height: 0,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 5,
+  },
+  menuHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+  },
+  menuTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  menuContent: {
+    padding: 20,
+  },
+  menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#EEEEEE',
+  },
+  menuItemText: {
+    marginLeft: 15,
+    fontSize: 16,
+    color: '#333',
+  },
+  logoutItem: {
+    marginTop: 20,
+    borderBottomWidth: 0,
+  },
+  logoutText: {
+    color: '#FF5252',
   },
 })

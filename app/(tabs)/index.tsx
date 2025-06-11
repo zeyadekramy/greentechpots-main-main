@@ -34,7 +34,7 @@ const HomeScreen = () => {
   }, []);
 
   // Helper function to determine status color
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch(status) {
       case 'healthy':
         return '#4CAF50'; // Green - your existing primary color
@@ -50,7 +50,7 @@ const HomeScreen = () => {
   };
 
   // Helper function to get status text
-  const getStatusText = (status) => {
+  const getStatusText = (status: string) => {
     switch(status) {
       case 'healthy':
         return 'Healthy';
@@ -66,12 +66,12 @@ const HomeScreen = () => {
   };
 
   // Function to determine status (in a real app, this would use actual sensor data)
-  const determineStatus = (pot) => {
+  const determineStatus = (pot: { uuid: string }) => {
     // This is a placeholder. In a real app, you would use actual data from the pot
     // For example: pot.moistureLevel, pot.temperature, etc.
     
     // For demonstration, we'll use the pot's UUID to generate a consistent status
-    const sum = pot.uuid.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const sum = pot.uuid.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
     const statusOptions = ['healthy', 'needsWater', 'overwatered', 'critical'];
     return statusOptions[sum % statusOptions.length];
   };

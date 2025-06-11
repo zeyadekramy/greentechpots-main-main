@@ -1,18 +1,24 @@
 import { View, Text, StyleSheet, SafeAreaView, FlatList, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-const notifications = [
+type NotificationItem = {
+  id: string;
+  title: string;
+  description: string;
+  time: string;
+};
+
+const notifications: NotificationItem[] = [
   {
     id: "2",
     title: "Sunlight Alert",
     description: "Move your (My Smart Pot) to a sunnier spot.",
     time: "5s ago",
   },
-
 ];
 
 const NotificationsScreen = () => {
-  const renderNotification = ({ item }) => (
+  const renderNotification = ({ item }: { item: NotificationItem }) => (
     <View style={styles.notificationCard}>
       <View style={styles.notificationIcon}>
         <Ionicons name="notifications-outline" size={24} color="#4CAF50" />

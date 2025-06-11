@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 
 export default function TabLayout() {
   return (
@@ -61,30 +61,30 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   tabBarStyle: {
     position: "absolute",
-    bottom: 15, // Slightly closer to the bottom
-    left: 10,
-    right: 10,
-    height: 70, // Reduced height for a smaller navbar
+    bottom: 2, // Slightly closer to the bottom
+    left: 20,
+    right: 20,
+    height: 60, // Reduced height for a smaller navbar
     backgroundColor: "white",
-    borderRadius: 60, // Semi-circular design
-    shadowColor: "#000",
+    borderRadius: 100, // Semi-circular design
+    shadowColor: "#000000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 4, // For Android shadow
+    elevation: 10, // For Android shadow
     borderTopWidth: 0, // Remove default border
     paddingHorizontal: 20,
   },
   tabIconContainer: {
     alignItems: "center",
     justifyContent: "center",
-    flex: 2,
+    flex: 1,
   },
   focusedTab: {
     borderWidth: 10, // Slightly thinner border
     borderColor: "#4CAF50", // Green border color
-    borderRadius: 30, // Smaller rounded border
-    paddingVertical: 2, // Adjusted padding for smaller height
+    borderRadius: 40, // Smaller rounded border
+    paddingVertical: 1, // Adjusted padding for smaller height
     paddingHorizontal: 10, // Reduced width for the highlight
     backgroundColor: "white", // Keep the background white
     shadowColor: "#4CAF50", // Subtle green shadow
@@ -92,5 +92,5 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 10,
     elevation: 3, // For Android shadow
-  },
+  }, 
 });
